@@ -1,18 +1,14 @@
-import java.io.*;
+package studentmanagement;
+
 import java.util.ArrayList;
 
 public class StudentManager {
 
-    private ArrayList<Student> students;
-    private final String FILE_NAME = "students.txt";
+    // ArrayList to store students
+    private ArrayList<Student> students = new ArrayList<>();
 
-    // Constructor
-    public StudentManager() {
-        students = new ArrayList<>();
-        loadFromFile();
-    }
 
-    // ADD
+    // 1. ADD STUDENT
     public void addStudent(Student student) {
 
         // Check duplicate ID
@@ -24,146 +20,74 @@ public class StudentManager {
         }
 
         students.add(student);
-        saveToFile();
-
         System.out.println("Student added successfully!");
     }
 
-    // VIEW
+
+    // 2. VIEW ALL STUDENTS
     public void viewStudents() {
 
         if (students.isEmpty()) {
-            System.out.println("No student records found.");
+            System.out.println("No students found.");
             return;
         }
 
-        System.out.println("\n----- Student Records -----");
+        System.out.println("\n===== STUDENT LIST =====");
 
         for (Student student : students) {
             System.out.println(student);
         }
     }
 
-    // SEARCH
-    public void searchStudent(int id) {
+
+    // 3. SEARCH STUDENT
+    public Student searchStudent(int id) {
 
         for (Student student : students) {
 
             if (student.getId() == id) {
-                System.out.println("Student found:");
-                System.out.println(student);
-                return;
+                return student;
             }
         }
 
-        System.out.println("Student not found.");
+        return null;
     }
 
-    // UPDATE
+
+    // 4. UPDATE STUDENT
     public void updateStudent(int id, String name, int age, String course) {
 
-        for (Student student : students) {
+        Student student = searchStudent(id);
 
-            if (student.getId() == id) {
+        if (student != null) {
 
-                student.setName(name);
-                student.setAge(age);
-                student.setCourse(course);
+            student.setName(name);
+            student.setAge(age);
+            student.setCourse(course);
 
-                saveToFile();
+            System.out.println("Student updated successfully!");
 
-                System.out.println("Student updated successfully!");
-                return;
-            }
+        } else {
+
+            System.out.println("Student not found!");
         }
-
-        System.out.println("Student not found.");
     }
 
-    // DELETE
+
+    // 5. DELETE STUDENT
     public void deleteStudent(int id) {
 
-        for (Student student : students) {
+        Student student = searchStudent(id);
 
-            if (student.getId() == id) {
+        if (student != null) {
 
-                students.remove(student);
-                saveToFile();
+            students.remove(student);
 
-                System.out.println("Student deleted successfully!");
-                return;
-            }
-        }
+            System.out.println("Student deleted successfully!");
 
-        System.out.println("Student not found.");
-    }
+        } else {
 
-    // SAVE DATA TO FILE
-    private void saveToFile() {
-
-        try {
-
-            FileWriter writer = new FileWriter(FILE_NAME);
-
-            for (Student student : students) {
-
-                writer.write(
-                        student.getId() + "," +
-                                student.getName() + "," +
-                                student.getAge() + "," +
-                                student.getCourse() +
-                                "\n"
-                );
-            }
-
-            writer.close();
-
-        } catch (IOException e) {
-
-            System.out.println("Error saving data.");
-        }
-    }
-
-    // LOAD DATA FROM FILE
-    private void loadFromFile() {
-
-        File file = new File(FILE_NAME);
-
-        if (!file.exists()) {
-            return;
-        }
-
-        try {
-
-            BufferedReader reader =
-                    new BufferedReader(new FileReader(FILE_NAME));
-
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-
-                String[] data = line.split(",");
-
-                int id = Integer.parseInt(data[0]);
-                String name = data[1];
-                int age = Integer.parseInt(data[2]);
-                String course = data[3];
-
-                Student student =
-                        new Student(id, name, age, course);
-
-                students.add(student);
-            }
-
-            reader.close();
-
-        } catch (IOException e) {
-
-            System.out.println("Error loading data.");
-
-        } catch (NumberFormatException e) {
-
-            System.out.println("Invalid data in file.");
+            System.out.println("Student not found!");
         }
     }
 }
